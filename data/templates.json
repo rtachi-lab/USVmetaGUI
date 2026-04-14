@@ -1,0 +1,110 @@
+[
+  {
+    "id": "tmpl-male-female-1min",
+    "template_name": "Male-Female Interaction 1 min",
+    "experiment": {
+      "name": "Male-Female interaction",
+      "group_subject": "default-group",
+      "date": null,
+      "temperature": "24",
+      "light_cycle": "day",
+      "microphone": "Avisoft CM16/CMPA",
+      "acquisition_hardware": "Avisoft UltraSoundGate 116H",
+      "acquisition_software": "Avisoft Recorder",
+      "sampling_rate": 250.0,
+      "bit_depth": 16.0,
+      "laboratory": "Default laboratory"
+    },
+    "protocol": {
+      "name": "1 min interaction recording",
+      "number_files": 1,
+      "description": "Template for a short male-female interaction recording."
+    },
+    "subject_defaults": {
+      "name": "",
+      "origin": "in-house",
+      "sex": "male",
+      "group": "default-group",
+      "genotype": "+/+",
+      "treatment": "none",
+      "strain": {
+        "name": "C57BL/6J",
+        "background": "C57BL/6J",
+        "bibliography": "http://jaxmice.jax.org/strain/000664.html"
+      }
+    },
+    "default_user_id": "user-default"
+  },
+  {
+    "id": "tmpl-pup-usv-5min",
+    "template_name": "Pup USV 5 min",
+    "experiment": {
+      "name": "Pup USV recording",
+      "group_subject": "pup-cohort",
+      "date": null,
+      "temperature": "22",
+      "light_cycle": "day",
+      "microphone": "Avisoft CM16/CMPA",
+      "acquisition_hardware": "Avisoft UltraSoundGate 416H",
+      "acquisition_software": "Avisoft Recorder",
+      "sampling_rate": 250.0,
+      "bit_depth": 16.0,
+      "laboratory": "Default laboratory"
+    },
+    "protocol": {
+      "name": "Pup isolation recording",
+      "number_files": 1,
+      "description": "Template for pup USV recording during isolation."
+    },
+    "subject_defaults": {
+      "name": "",
+      "origin": "in-house",
+      "sex": null,
+      "group": "pup-cohort",
+      "genotype": "+/+",
+      "treatment": "none",
+      "strain": {
+        "name": "C57BL/6J",
+        "background": "C57BL/6J",
+        "bibliography": "http://jaxmice.jax.org/strain/000664.html"
+      }
+    },
+    "default_user_id": "user-default"
+  },
+  {
+    "id": "f6b9fab4-a277-4f01-adaf-9cf12c9a9c1a",
+    "template_name": "Pup USV 5 min 2nd",
+    "experiment": {
+      "name": "Pup USV recording",
+      "group_subject": "pup-cohort",
+      "date": null,
+      "temperature": "22",
+      "light_cycle": "day",
+      "microphone": "Avisoft CM16/CMPA",
+      "acquisition_hardware": "Avisoft UltraSoundGate 416H",
+      "acquisition_software": "Avisoft Recorder",
+      "sampling_rate": 250.0,
+      "bit_depth": 16.0,
+      "laboratory": "Default laboratory"
+    },
+    "protocol": {
+      "name": "Pup isolation recording",
+      "number_files": 1,
+      "description": "Template for pup USV recording during isolation."
+    },
+    "subject_defaults": {
+      "name": "",
+      "origin": "in-house",
+      "sex": null,
+      "group": "pup-cohort",
+      "genotype": "+/+",
+      "treatment": "none",
+      "strain": {
+        "name": "C57BL/6J",
+        "background": "C57BL/6J",
+        "bibliography": "http://jaxmice.jax.org/strain/000664.html"
+      }
+    },
+    "default_user_id": "user-default"
+  }
+]

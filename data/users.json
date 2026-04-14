@@ -1,0 +1,22 @@
+[
+  {
+    "id": "user-default",
+    "name_user": "Yamada",
+    "first_name_user": "Taro",
+    "email_user": "taro.yamada@example.org",
+    "unit_user": "USV Lab",
+    "institution_user": "Example University",
+    "address_user": "1-1 Example, Tokyo",
+    "country_user": "Japan"
+  },
+  {
+    "id": "user-secondary",
+    "name_user": "Suzuki",
+    "first_name_user": "Hanako",
+    "email_user": "hanako.suzuki@example.org",
+    "unit_user": "USV Lab",
+    "institution_user": "Example University",
+    "address_user": "1-1 Example, Tokyo",
+    "country_user": "Japan"
+  }
+]

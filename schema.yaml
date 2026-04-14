@@ -1,0 +1,593 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /api/experiment/:
+    get:
+      operationId: api_experiment_retrieve
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+  /api/file/:
+    get:
+      operationId: api_file_retrieve
+      parameters:
+      - in: query
+        name: filter
+        schema:
+          type: string
+        description: filter
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: text search
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+          description: ''
+  /api/protocol/:
+    get:
+      operationId: api_protocol_retrieve
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Protocol'
+          description: ''
+  /api/software/:
+    get:
+      operationId: api_software_retrieve
+      parameters:
+      - in: query
+        name: filter
+        schema:
+          type: string
+        description: filter
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: text search
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Software'
+          description: ''
+  /api/strain/:
+    get:
+      operationId: api_strain_retrieve
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Strain'
+          description: ''
+  /api/subject/:
+    get:
+      operationId: api_subject_retrieve
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+          description: ''
+  /api/user/:
+    get:
+      operationId: api_user_retrieve
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+components:
+  schemas:
+    BlankEnum:
+      enum:
+      - ''
+    Experiment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        protocol:
+          allOf:
+          - $ref: '#/components/schemas/Protocol'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        group_subject:
+          type: string
+          nullable: true
+          maxLength: 255
+        date:
+          type: string
+          format: date
+          nullable: true
+        temperature:
+          type: string
+          nullable: true
+          maxLength: 255
+        light_cycle:
+          type: string
+          nullable: true
+          maxLength: 255
+        microphone:
+          type: string
+          nullable: true
+          maxLength: 255
+        acquisition_hardware:
+          type: string
+          nullable: true
+          maxLength: 255
+        acquisition_software:
+          type: string
+          nullable: true
+          maxLength: 255
+        sampling_rate:
+          type: number
+          format: double
+          nullable: true
+        bit_depth:
+          type: number
+          format: double
+          nullable: true
+        laboratory:
+          type: string
+          nullable: true
+          maxLength: 255
+      required:
+      - id
+      - name
+      - protocol
+    File:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        experiment:
+          allOf:
+          - $ref: '#/components/schemas/Experiment'
+          readOnly: true
+        subject:
+          allOf:
+          - $ref: '#/components/schemas/Subject'
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        number:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        link:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        notes:
+          type: string
+          nullable: true
+        doi:
+          type: string
+          nullable: true
+          maxLength: 255
+        is_valid_link:
+          type: boolean
+        downloads:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - experiment
+      - id
+      - subject
+    NullEnum:
+      enum:
+      - null
+    Protocol:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        number_files:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        description:
+          type: string
+      required:
+      - id
+      - name
+      - user
+    Reference:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 255
+        doi:
+          type: string
+          nullable: true
+          maxLength: 255
+      required:
+      - id
+      - name
+    SexEnum:
+      enum:
+      - male
+      - female
+      type: string
+      description: |-
+        * `male` - Male
+        * `female` - Female
+    Software:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+          readOnly: true
+        references:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        type:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        made_by:
+          type: string
+        description:
+          type: string
+        technical_requirements:
+          type: string
+      required:
+      - id
+      - name
+      - references
+      - users
+    Strain:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        background:
+          type: string
+          maxLength: 255
+        bibliography:
+          type: string
+          nullable: true
+      required:
+      - background
+      - id
+      - name
+    Subject:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        strain:
+          allOf:
+          - $ref: '#/components/schemas/Strain'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        origin:
+          type: string
+          nullable: true
+          maxLength: 255
+        sex:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/SexEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        group:
+          type: string
+          nullable: true
+          maxLength: 255
+        genotype:
+          type: string
+          nullable: true
+          maxLength: 255
+        treatment:
+          type: string
+          nullable: true
+          maxLength: 255
+      required:
+      - id
+      - name
+      - strain
+      - user
+    TypeEnum:
+      enum:
+      - acquisition
+      - analysis
+      - acquisition and analysis
+      type: string
+      description: |-
+        * `acquisition` - acquisition
+        * `analysis` - analysis
+        * `acquisition and analysis` - acquisition and analysis
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name_user:
+          type: string
+          nullable: true
+          maxLength: 255
+        first_name_user:
+          type: string
+          nullable: true
+          maxLength: 255
+        email_user:
+          type: string
+          maxLength: 255
+        unit_user:
+          type: string
+          nullable: true
+          maxLength: 255
+        institution_user:
+          type: string
+          nullable: true
+          maxLength: 255
+        address_user:
+          type: string
+          nullable: true
+          maxLength: 255
+        country_user:
+          type: string
+          nullable: true
+          maxLength: 255
+      required:
+      - email_user
+      - id
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"

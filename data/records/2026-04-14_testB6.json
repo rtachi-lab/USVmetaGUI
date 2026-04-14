@@ -1,0 +1,49 @@
+{
+  "experiment": {
+    "name": "Pup USV recording",
+    "group_subject": "pup-cohort",
+    "date": "2026-04-14",
+    "temperature": "22",
+    "light_cycle": "day",
+    "microphone": "Avisoft CM16/CMPA",
+    "acquisition_hardware": "Avisoft UltraSoundGate 416H",
+    "acquisition_software": "Avisoft Recorder",
+    "sampling_rate": 244.0,
+    "bit_depth": 16.0,
+    "laboratory": "Default laboratory"
+  },
+  "protocol": {
+    "name": "Pup isolation recording",
+    "number_files": 1,
+    "description": "Template for pup USV recording during isolation."
+  },
+  "subject": {
+    "name": "testB6",
+    "origin": "in-house",
+    "sex": "female",
+    "group": "pup-cohort",
+    "genotype": "+/+",
+    "treatment": "none",
+    "strain": {
+      "name": "C57BL/6J",
+      "background": "C57BL/6J",
+      "bibliography": "http://jaxmice.jax.org/strain/000664.html"
+    }
+  },
+  "user": {
+    "name_user": "Yamada",
+    "first_name_user": "Taro",
+    "email_user": "taro.yamada@example.org",
+    "unit_user": "USV Lab",
+    "institution_user": "Example University",
+    "address_user": "1-1 Example, Tokyo",
+    "country_user": "Japan"
+  },
+  "file": {
+    "name": "2026-04-14_unknown-subject.wav",
+    "number": null,
+    "link": null,
+    "notes": null,
+    "doi": null
+  }
+}
