@@ -21,6 +21,8 @@ class SettingsPage(QWidget):
 
         layout = QVBoxLayout(self)
         form = QFormLayout()
+        form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
 
         self.records_dir = QLineEdit()
         self.json_filename_pattern = QComboBox()

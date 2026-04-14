@@ -1,8 +1,7 @@
-from PySide6.QtCore import QDate, Signal
+from PySide6.QtCore import QDate, Qt, Signal
 from PySide6.QtWidgets import (
     QComboBox,
     QDateEdit,
-    QDoubleSpinBox,
     QFormLayout,
     QGroupBox,
     QHBoxLayout,
@@ -40,6 +39,7 @@ class RecordEditorPage(QWidget):
         root = QVBoxLayout(self)
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         content = QWidget()
         self.content_layout = QVBoxLayout(content)
 
@@ -77,6 +77,7 @@ class RecordEditorPage(QWidget):
     def _build_experiment_section(self):
         box = QGroupBox("experiment")
         form = QFormLayout(box)
+        self._configure_form_layout(form)
         self.exp_name = QLineEdit()
         self.exp_group_subject = QLineEdit()
         self.exp_date = QDateEdit()
@@ -88,13 +89,12 @@ class RecordEditorPage(QWidget):
         self.exp_microphone = QLineEdit()
         self.exp_hardware = QLineEdit()
         self.exp_software = QLineEdit()
-        self.exp_sampling_rate = QDoubleSpinBox()
+        self.exp_sampling_rate = QSpinBox()
         self.exp_sampling_rate.setMaximum(1_000_000)
-        self.exp_sampling_rate.setDecimals(3)
         self.exp_sampling_rate.setSpecialValueText("")
-        self.exp_bit_depth = QDoubleSpinBox()
+        self.exp_sampling_rate.setSuffix(" Hz")
+        self.exp_bit_depth = QSpinBox()
         self.exp_bit_depth.setMaximum(1024)
-        self.exp_bit_depth.setDecimals(3)
         self.exp_bit_depth.setSpecialValueText("")
         self.exp_laboratory = QPlainTextEdit()
 
@@ -116,6 +116,7 @@ class RecordEditorPage(QWidget):
     def _build_protocol_section(self):
         box = QGroupBox("protocol")
         form = QFormLayout(box)
+        self._configure_form_layout(form)
         self.protocol_name = QLineEdit()
         self.protocol_number_files = QSpinBox()
         self.protocol_number_files.setMaximum(100000)
@@ -129,6 +130,7 @@ class RecordEditorPage(QWidget):
     def _build_subject_section(self):
         box = QGroupBox("subject")
         form = QFormLayout(box)
+        self._configure_form_layout(form)
         self.subject_name = QLineEdit()
         self.subject_origin = QLineEdit()
         self.subject_sex = QComboBox()
@@ -155,6 +157,7 @@ class RecordEditorPage(QWidget):
     def _build_user_section(self):
         box = QGroupBox("user")
         form = QFormLayout(box)
+        self._configure_form_layout(form)
         self.user_selector = QComboBox()
         self.user_selector.currentIndexChanged.connect(self._apply_selected_user)
         self.user_name = QLineEdit()
@@ -178,6 +181,7 @@ class RecordEditorPage(QWidget):
     def _build_file_section(self):
         box = QGroupBox("file")
         form = QFormLayout(box)
+        self._configure_form_layout(form)
         file_name_row = QHBoxLayout()
         self.file_name = QLineEdit()
         suggest_button = QPushButton("候補を提案")
@@ -202,6 +206,7 @@ class RecordEditorPage(QWidget):
     def _build_interaction_section(self):
         box = QGroupBox("interaction helper")
         form = QFormLayout(box)
+        self._configure_form_layout(form)
         self.partner_name = QLineEdit()
         self.partner_sex = QComboBox()
         self.partner_sex.addItems(["", "male", "female"])
@@ -258,8 +263,8 @@ class RecordEditorPage(QWidget):
         self.exp_microphone.clear()
         self.exp_hardware.clear()
         self.exp_software.clear()
-        self.exp_sampling_rate.setValue(0.0)
-        self.exp_bit_depth.setValue(0.0)
+        self.exp_sampling_rate.setValue(0)
+        self.exp_bit_depth.setValue(0)
         self.exp_laboratory.clear()
         self.protocol_name.clear()
         self.protocol_number_files.setValue(0)
@@ -301,8 +306,8 @@ class RecordEditorPage(QWidget):
         self.exp_microphone.setText(template.experiment.microphone or "")
         self.exp_hardware.setText(template.experiment.acquisition_hardware or "")
         self.exp_software.setText(template.experiment.acquisition_software or "")
-        self.exp_sampling_rate.setValue(template.experiment.sampling_rate or 0.0)
-        self.exp_bit_depth.setValue(template.experiment.bit_depth or 0.0)
+        self.exp_sampling_rate.setValue(template.experiment.sampling_rate or 0)
+        self.exp_bit_depth.setValue(template.experiment.bit_depth or 0)
         self.exp_laboratory.setPlainText(template.experiment.laboratory or "")
         self.protocol_name.setText(template.protocol.name or "")
         self.protocol_number_files.setValue(template.protocol.number_files or 0)
@@ -330,8 +335,8 @@ class RecordEditorPage(QWidget):
         self.exp_microphone.setText(record.experiment.microphone or "")
         self.exp_hardware.setText(record.experiment.acquisition_hardware or "")
         self.exp_software.setText(record.experiment.acquisition_software or "")
-        self.exp_sampling_rate.setValue(record.experiment.sampling_rate or 0.0)
-        self.exp_bit_depth.setValue(record.experiment.bit_depth or 0.0)
+        self.exp_sampling_rate.setValue(record.experiment.sampling_rate or 0)
+        self.exp_bit_depth.setValue(record.experiment.bit_depth or 0)
         self.exp_laboratory.setPlainText(record.experiment.laboratory or "")
         self.protocol_name.setText(record.protocol.name or "")
         self.protocol_number_files.setValue(record.protocol.number_files or 0)
@@ -432,6 +437,11 @@ class RecordEditorPage(QWidget):
 
     def _register_validation_widget(self, field_name: str, widget: QWidget):
         self._validation_widgets[field_name] = widget
+
+    @staticmethod
+    def _configure_form_layout(form: QFormLayout):
+        form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
 
     def clear_validation_errors(self):
         self.validation_label.clear()

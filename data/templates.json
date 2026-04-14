@@ -11,8 +11,8 @@
       "microphone": "Avisoft CM16/CMPA",
       "acquisition_hardware": "Avisoft UltraSoundGate 116H",
       "acquisition_software": "Avisoft Recorder",
-      "sampling_rate": 250.0,
-      "bit_depth": 16.0,
+      "sampling_rate": 250000,
+      "bit_depth": 16,
       "laboratory": "Default laboratory"
     },
     "protocol": {
@@ -47,8 +47,8 @@
       "microphone": "Avisoft CM16/CMPA",
       "acquisition_hardware": "Avisoft UltraSoundGate 416H",
       "acquisition_software": "Avisoft Recorder",
-      "sampling_rate": 250.0,
-      "bit_depth": 16.0,
+      "sampling_rate": 250000,
+      "bit_depth": 16,
       "laboratory": "Default laboratory"
     },
     "protocol": {
@@ -83,8 +83,8 @@
       "microphone": "Avisoft CM16/CMPA",
       "acquisition_hardware": "Avisoft UltraSoundGate 416H",
       "acquisition_software": "Avisoft Recorder",
-      "sampling_rate": 250.0,
-      "bit_depth": 16.0,
+      "sampling_rate": 250000,
+      "bit_depth": 16,
       "laboratory": "Default laboratory"
     },
     "protocol": {

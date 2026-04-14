@@ -21,6 +21,8 @@ class UserEditorPage(QWidget):
 
         layout = QVBoxLayout(self)
         form = QFormLayout()
+        form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
 
         self.name_user = QLineEdit()
         self.first_name_user = QLineEdit()

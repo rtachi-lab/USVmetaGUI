@@ -1,7 +1,6 @@
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QComboBox,
-    QDoubleSpinBox,
     QFormLayout,
     QGroupBox,
     QHBoxLayout,
@@ -28,6 +27,7 @@ class TemplateEditorPage(QWidget):
         root = QVBoxLayout(self)
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         content = QWidget()
         self.content_layout = QVBoxLayout(content)
@@ -56,6 +56,7 @@ class TemplateEditorPage(QWidget):
     def _build_meta_section(self):
         box = QGroupBox("template")
         form = QFormLayout(box)
+        self._configure_form_layout(form)
 
         self.template_name = QLineEdit()
         self.default_user_selector = QComboBox()
@@ -68,6 +69,7 @@ class TemplateEditorPage(QWidget):
     def _build_experiment_section(self):
         box = QGroupBox("experiment")
         form = QFormLayout(box)
+        self._configure_form_layout(form)
 
         self.exp_name = QLineEdit()
         self.exp_group_subject = QLineEdit()
@@ -77,13 +79,12 @@ class TemplateEditorPage(QWidget):
         self.exp_microphone = QLineEdit()
         self.exp_hardware = QLineEdit()
         self.exp_software = QLineEdit()
-        self.exp_sampling_rate = QDoubleSpinBox()
+        self.exp_sampling_rate = QSpinBox()
         self.exp_sampling_rate.setMaximum(1_000_000)
-        self.exp_sampling_rate.setDecimals(3)
         self.exp_sampling_rate.setSpecialValueText("")
-        self.exp_bit_depth = QDoubleSpinBox()
+        self.exp_sampling_rate.setSuffix(" Hz")
+        self.exp_bit_depth = QSpinBox()
         self.exp_bit_depth.setMaximum(1024)
-        self.exp_bit_depth.setDecimals(3)
         self.exp_bit_depth.setSpecialValueText("")
         self.exp_laboratory = QPlainTextEdit()
 
@@ -103,6 +104,7 @@ class TemplateEditorPage(QWidget):
     def _build_protocol_section(self):
         box = QGroupBox("protocol")
         form = QFormLayout(box)
+        self._configure_form_layout(form)
 
         self.protocol_name = QLineEdit()
         self.protocol_number_files = QSpinBox()
@@ -118,6 +120,7 @@ class TemplateEditorPage(QWidget):
     def _build_subject_defaults_section(self):
         box = QGroupBox("subject_defaults")
         form = QFormLayout(box)
+        self._configure_form_layout(form)
 
         self.subject_origin = QLineEdit()
         self.subject_sex = QComboBox()
@@ -147,6 +150,11 @@ class TemplateEditorPage(QWidget):
             label = f"{user.name_user or ''} {user.first_name_user or ''} <{user.email_user}>".strip()
             self.default_user_selector.addItem(label, user.id)
 
+    @staticmethod
+    def _configure_form_layout(form: QFormLayout):
+        form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
+
     def load_template(self, template: RecordingTemplate):
         self.template_id = template.id
         self.template_name.setText(template.template_name)
@@ -158,8 +166,8 @@ class TemplateEditorPage(QWidget):
         self.exp_microphone.setText(template.experiment.microphone or "")
         self.exp_hardware.setText(template.experiment.acquisition_hardware or "")
         self.exp_software.setText(template.experiment.acquisition_software or "")
-        self.exp_sampling_rate.setValue(template.experiment.sampling_rate or 0.0)
-        self.exp_bit_depth.setValue(template.experiment.bit_depth or 0.0)
+        self.exp_sampling_rate.setValue(template.experiment.sampling_rate or 0)
+        self.exp_bit_depth.setValue(template.experiment.bit_depth or 0)
         self.exp_laboratory.setPlainText(template.experiment.laboratory or "")
 
         self.protocol_name.setText(template.protocol.name or "")
@@ -192,8 +200,8 @@ class TemplateEditorPage(QWidget):
         self.exp_microphone.clear()
         self.exp_hardware.clear()
         self.exp_software.clear()
-        self.exp_sampling_rate.setValue(0.0)
-        self.exp_bit_depth.setValue(0.0)
+        self.exp_sampling_rate.setValue(0)
+        self.exp_bit_depth.setValue(0)
         self.exp_laboratory.clear()
         self.protocol_name.clear()
         self.protocol_number_files.setValue(0)

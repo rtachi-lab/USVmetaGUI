@@ -49,8 +49,8 @@ class ExperimentModel:
     microphone: Optional[str] = None
     acquisition_hardware: Optional[str] = None
     acquisition_software: Optional[str] = None
-    sampling_rate: Optional[float] = None
-    bit_depth: Optional[float] = None
+    sampling_rate: Optional[int] = None
+    bit_depth: Optional[int] = None
     laboratory: Optional[str] = None
 
 
