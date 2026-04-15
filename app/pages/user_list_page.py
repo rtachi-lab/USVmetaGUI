@@ -1,12 +1,7 @@
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import (
-    QHBoxLayout,
-    QListWidget,
-    QListWidgetItem,
-    QPushButton,
-    QVBoxLayout,
-    QWidget,
-)
+from PySide6.QtWidgets import QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QVBoxLayout, QWidget
+
+from app.i18n import tr
 
 
 class UserListPage(QWidget):
@@ -23,21 +18,29 @@ class UserListPage(QWidget):
         layout.addWidget(self.list_widget)
 
         row = QHBoxLayout()
-        back_button = QPushButton("戻る")
-        create_button = QPushButton("新規作成")
-        edit_button = QPushButton("編集")
-        delete_button = QPushButton("削除")
+        self.back_button = QPushButton()
+        self.create_button = QPushButton()
+        self.edit_button = QPushButton()
+        self.delete_button = QPushButton()
 
-        back_button.clicked.connect(self.back_requested.emit)
-        create_button.clicked.connect(self.create_requested.emit)
-        edit_button.clicked.connect(self._emit_edit)
-        delete_button.clicked.connect(self._emit_delete)
+        self.back_button.clicked.connect(self.back_requested.emit)
+        self.create_button.clicked.connect(self.create_requested.emit)
+        self.edit_button.clicked.connect(self._emit_edit)
+        self.delete_button.clicked.connect(self._emit_delete)
 
-        row.addWidget(back_button)
-        row.addWidget(create_button)
-        row.addWidget(edit_button)
-        row.addWidget(delete_button)
+        row.addWidget(self.back_button)
+        row.addWidget(self.create_button)
+        row.addWidget(self.edit_button)
+        row.addWidget(self.delete_button)
         layout.addLayout(row)
+
+        self.apply_language("en")
+
+    def apply_language(self, language: str):
+        self.back_button.setText(tr(language, "common.back"))
+        self.create_button.setText(tr(language, "user.list.create"))
+        self.edit_button.setText(tr(language, "common.edit"))
+        self.delete_button.setText(tr(language, "common.delete"))
 
     def set_users(self, users):
         self.list_widget.clear()

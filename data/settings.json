@@ -1,4 +1,5 @@
 {
   "records_dir": "data/records",
-  "json_filename_pattern": "{date}_{subject}.json"
+  "json_filename_pattern": "{date}_{subject}.json",
+  "language": "ja"
 }

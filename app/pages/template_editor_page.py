@@ -4,6 +4,7 @@ from PySide6.QtWidgets import (
     QFormLayout,
     QGroupBox,
     QHBoxLayout,
+    QLabel,
     QLineEdit,
     QPlainTextEdit,
     QPushButton,
@@ -13,6 +14,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from app.i18n import tr
 from app.models import ExperimentModel, ProtocolModel, RecordingTemplate, StrainModel, SubjectModel
 
 
@@ -23,6 +25,8 @@ class TemplateEditorPage(QWidget):
     def __init__(self):
         super().__init__()
         self.template_id = None
+        self.section_boxes = {}
+        self.labels = {}
 
         root = QVBoxLayout(self)
         scroll = QScrollArea()
@@ -38,14 +42,14 @@ class TemplateEditorPage(QWidget):
         self._build_subject_defaults_section()
 
         row = QHBoxLayout()
-        cancel_button = QPushButton("キャンセル")
-        save_button = QPushButton("保存")
+        self.cancel_button = QPushButton()
+        self.save_button = QPushButton()
 
-        cancel_button.clicked.connect(self.cancel_requested.emit)
-        save_button.clicked.connect(self._emit_save)
+        self.cancel_button.clicked.connect(self.cancel_requested.emit)
+        self.save_button.clicked.connect(self._emit_save)
 
-        row.addWidget(cancel_button)
-        row.addWidget(save_button)
+        row.addWidget(self.cancel_button)
+        row.addWidget(self.save_button)
 
         self.content_layout.addLayout(row)
         self.content_layout.addStretch()
@@ -53,8 +57,11 @@ class TemplateEditorPage(QWidget):
         scroll.setWidget(content)
         root.addWidget(scroll)
 
+        self.apply_language("en")
+
     def _build_meta_section(self):
-        box = QGroupBox("template")
+        box = QGroupBox()
+        self.section_boxes["group.template"] = box
         form = QFormLayout(box)
         self._configure_form_layout(form)
 
@@ -62,12 +69,13 @@ class TemplateEditorPage(QWidget):
         self.default_user_selector = QComboBox()
         self.default_user_selector.addItem("", None)
 
-        form.addRow("template_name", self.template_name)
-        form.addRow("default_user_id", self.default_user_selector)
+        self._add_form_row(form, "field.template_name", self.template_name)
+        self._add_form_row(form, "field.default_user_id", self.default_user_selector)
         self.content_layout.addWidget(box)
 
     def _build_experiment_section(self):
-        box = QGroupBox("experiment")
+        box = QGroupBox()
+        self.section_boxes["group.experiment"] = box
         form = QFormLayout(box)
         self._configure_form_layout(form)
 
@@ -88,21 +96,25 @@ class TemplateEditorPage(QWidget):
         self.exp_bit_depth.setSpecialValueText("")
         self.exp_laboratory = QPlainTextEdit()
 
-        form.addRow("name", self.exp_name)
-        form.addRow("group_subject", self.exp_group_subject)
-        form.addRow("temperature", self.exp_temperature)
-        form.addRow("light_cycle", self.exp_light_cycle)
-        form.addRow("microphone", self.exp_microphone)
-        form.addRow("acquisition_hardware", self.exp_hardware)
-        form.addRow("acquisition_software", self.exp_software)
-        form.addRow("sampling_rate", self.exp_sampling_rate)
-        form.addRow("bit_depth", self.exp_bit_depth)
-        form.addRow("laboratory", self.exp_laboratory)
+        for key, widget in [
+            ("field.name", self.exp_name),
+            ("field.group_subject", self.exp_group_subject),
+            ("field.temperature", self.exp_temperature),
+            ("field.light_cycle", self.exp_light_cycle),
+            ("field.microphone", self.exp_microphone),
+            ("field.acquisition_hardware", self.exp_hardware),
+            ("field.acquisition_software", self.exp_software),
+            ("field.sampling_rate", self.exp_sampling_rate),
+            ("field.bit_depth", self.exp_bit_depth),
+            ("field.laboratory", self.exp_laboratory),
+        ]:
+            self._add_form_row(form, key, widget)
 
         self.content_layout.addWidget(box)
 
     def _build_protocol_section(self):
-        box = QGroupBox("protocol")
+        box = QGroupBox()
+        self.section_boxes["group.protocol"] = box
         form = QFormLayout(box)
         self._configure_form_layout(form)
 
@@ -111,14 +123,18 @@ class TemplateEditorPage(QWidget):
         self.protocol_number_files.setMaximum(100000)
         self.protocol_description = QPlainTextEdit()
 
-        form.addRow("name", self.protocol_name)
-        form.addRow("number_files", self.protocol_number_files)
-        form.addRow("description", self.protocol_description)
+        for key, widget in [
+            ("field.name", self.protocol_name),
+            ("field.number_files", self.protocol_number_files),
+            ("field.description", self.protocol_description),
+        ]:
+            self._add_form_row(form, key, widget)
 
         self.content_layout.addWidget(box)
 
     def _build_subject_defaults_section(self):
-        box = QGroupBox("subject_defaults")
+        box = QGroupBox()
+        self.section_boxes["group.subject_defaults"] = box
         form = QFormLayout(box)
         self._configure_form_layout(form)
 
@@ -132,16 +148,38 @@ class TemplateEditorPage(QWidget):
         self.strain_background = QLineEdit()
         self.strain_bibliography = QPlainTextEdit()
 
-        form.addRow("origin", self.subject_origin)
-        form.addRow("sex", self.subject_sex)
-        form.addRow("group", self.subject_group)
-        form.addRow("genotype", self.subject_genotype)
-        form.addRow("treatment", self.subject_treatment)
-        form.addRow("strain.name", self.strain_name)
-        form.addRow("strain.background", self.strain_background)
-        form.addRow("strain.bibliography", self.strain_bibliography)
+        for key, widget in [
+            ("field.origin", self.subject_origin),
+            ("field.sex", self.subject_sex),
+            ("field.group", self.subject_group),
+            ("field.genotype", self.subject_genotype),
+            ("field.treatment", self.subject_treatment),
+            ("field.strain.name", self.strain_name),
+            ("field.strain.background", self.strain_background),
+            ("field.strain.bibliography", self.strain_bibliography),
+        ]:
+            self._add_form_row(form, key, widget)
 
         self.content_layout.addWidget(box)
+
+    def _add_form_row(self, form: QFormLayout, label_key: str, widget: QWidget):
+        label = QLabel()
+        self.labels.setdefault(label_key, []).append(label)
+        form.addRow(label, widget)
+
+    @staticmethod
+    def _configure_form_layout(form: QFormLayout):
+        form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
+
+    def apply_language(self, language: str):
+        for section_key, box in self.section_boxes.items():
+            box.setTitle(tr(language, section_key))
+        for key, labels in self.labels.items():
+            for label in labels:
+                label.setText(tr(language, key))
+        self.cancel_button.setText(tr(language, "common.cancel"))
+        self.save_button.setText(tr(language, "common.save"))
 
     def set_users(self, users):
         self.default_user_selector.clear()
@@ -149,11 +187,6 @@ class TemplateEditorPage(QWidget):
         for user in users:
             label = f"{user.name_user or ''} {user.first_name_user or ''} <{user.email_user}>".strip()
             self.default_user_selector.addItem(label, user.id)
-
-    @staticmethod
-    def _configure_form_layout(form: QFormLayout):
-        form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
-        form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
 
     def load_template(self, template: RecordingTemplate):
         self.template_id = template.id

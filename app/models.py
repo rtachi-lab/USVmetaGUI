@@ -98,6 +98,7 @@ class RecordingTemplate:
 class AppSettings:
     records_dir: str = ""
     json_filename_pattern: str = "{date}_{subject}.json"
+    language: str = "en"
 
 
 def dataclass_to_dict(obj):

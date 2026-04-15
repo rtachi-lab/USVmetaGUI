@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from app.i18n import tr
 from app.models import (
     ExperimentModel,
     FileModel,
@@ -35,6 +36,9 @@ class RecordEditorPage(QWidget):
         super().__init__()
         self._users_by_id = {}
         self._validation_widgets = {}
+        self.section_boxes = {}
+        self.labels = {}
+        self.language = "en"
 
         root = QVBoxLayout(self)
         scroll = QScrollArea()
@@ -52,13 +56,13 @@ class RecordEditorPage(QWidget):
         self._build_validation_summary()
 
         button_row = QHBoxLayout()
-        cancel_button = QPushButton("キャンセル")
-        preview_button = QPushButton("JSONプレビュー")
-        cancel_button.clicked.connect(self.cancel_requested.emit)
-        preview_button.clicked.connect(self._emit_preview)
+        self.cancel_button = QPushButton()
+        self.preview_button = QPushButton()
+        self.cancel_button.clicked.connect(self.cancel_requested.emit)
+        self.preview_button.clicked.connect(self._emit_preview)
 
-        button_row.addWidget(cancel_button)
-        button_row.addWidget(preview_button)
+        button_row.addWidget(self.cancel_button)
+        button_row.addWidget(self.preview_button)
 
         self.content_layout.addLayout(button_row)
         self.content_layout.addStretch()
@@ -67,6 +71,7 @@ class RecordEditorPage(QWidget):
         root.addWidget(scroll)
 
         self.clear_form()
+        self.apply_language("en")
 
     def _build_validation_summary(self):
         self.validation_label = QLabel()
@@ -75,7 +80,8 @@ class RecordEditorPage(QWidget):
         self.content_layout.addWidget(self.validation_label)
 
     def _build_experiment_section(self):
-        box = QGroupBox("experiment")
+        box = QGroupBox()
+        self.section_boxes["group.experiment"] = box
         form = QFormLayout(box)
         self._configure_form_layout(form)
         self.exp_name = QLineEdit()
@@ -98,37 +104,45 @@ class RecordEditorPage(QWidget):
         self.exp_bit_depth.setSpecialValueText("")
         self.exp_laboratory = QPlainTextEdit()
 
-        form.addRow("name", self.exp_name)
-        form.addRow("group_subject", self.exp_group_subject)
-        form.addRow("date", self.exp_date)
-        form.addRow("temperature", self.exp_temperature)
-        form.addRow("light_cycle", self.exp_light_cycle)
-        form.addRow("microphone", self.exp_microphone)
-        form.addRow("acquisition_hardware", self.exp_hardware)
-        form.addRow("acquisition_software", self.exp_software)
-        form.addRow("sampling_rate", self.exp_sampling_rate)
-        form.addRow("bit_depth", self.exp_bit_depth)
-        form.addRow("laboratory", self.exp_laboratory)
+        for key, widget in [
+            ("field.name", self.exp_name),
+            ("field.group_subject", self.exp_group_subject),
+            ("field.date", self.exp_date),
+            ("field.temperature", self.exp_temperature),
+            ("field.light_cycle", self.exp_light_cycle),
+            ("field.microphone", self.exp_microphone),
+            ("field.acquisition_hardware", self.exp_hardware),
+            ("field.acquisition_software", self.exp_software),
+            ("field.sampling_rate", self.exp_sampling_rate),
+            ("field.bit_depth", self.exp_bit_depth),
+            ("field.laboratory", self.exp_laboratory),
+        ]:
+            self._add_form_row(form, key, widget)
         self.content_layout.addWidget(box)
         self._register_validation_widget("experiment.name", self.exp_name)
         self._register_validation_widget("experiment.date", self.exp_date)
 
     def _build_protocol_section(self):
-        box = QGroupBox("protocol")
+        box = QGroupBox()
+        self.section_boxes["group.protocol"] = box
         form = QFormLayout(box)
         self._configure_form_layout(form)
         self.protocol_name = QLineEdit()
         self.protocol_number_files = QSpinBox()
         self.protocol_number_files.setMaximum(100000)
         self.protocol_description = QPlainTextEdit()
-        form.addRow("name", self.protocol_name)
-        form.addRow("number_files", self.protocol_number_files)
-        form.addRow("description", self.protocol_description)
+        for key, widget in [
+            ("field.name", self.protocol_name),
+            ("field.number_files", self.protocol_number_files),
+            ("field.description", self.protocol_description),
+        ]:
+            self._add_form_row(form, key, widget)
         self.content_layout.addWidget(box)
         self._register_validation_widget("protocol.name", self.protocol_name)
 
     def _build_subject_section(self):
-        box = QGroupBox("subject")
+        box = QGroupBox()
+        self.section_boxes["group.subject"] = box
         form = QFormLayout(box)
         self._configure_form_layout(form)
         self.subject_name = QLineEdit()
@@ -141,21 +155,25 @@ class RecordEditorPage(QWidget):
         self.strain_name = QLineEdit()
         self.strain_background = QLineEdit()
         self.strain_bibliography = QPlainTextEdit()
-        form.addRow("name", self.subject_name)
-        form.addRow("origin", self.subject_origin)
-        form.addRow("sex", self.subject_sex)
-        form.addRow("group", self.subject_group)
-        form.addRow("genotype", self.subject_genotype)
-        form.addRow("treatment", self.subject_treatment)
-        form.addRow("strain.name", self.strain_name)
-        form.addRow("strain.background", self.strain_background)
-        form.addRow("strain.bibliography", self.strain_bibliography)
+        for key, widget in [
+            ("field.name", self.subject_name),
+            ("field.origin", self.subject_origin),
+            ("field.sex", self.subject_sex),
+            ("field.group", self.subject_group),
+            ("field.genotype", self.subject_genotype),
+            ("field.treatment", self.subject_treatment),
+            ("field.strain.name", self.strain_name),
+            ("field.strain.background", self.strain_background),
+            ("field.strain.bibliography", self.strain_bibliography),
+        ]:
+            self._add_form_row(form, key, widget)
         self.content_layout.addWidget(box)
         self._register_validation_widget("subject.name", self.subject_name)
         self._register_validation_widget("subject.strain.name", self.strain_name)
 
     def _build_user_section(self):
-        box = QGroupBox("user")
+        box = QGroupBox()
+        self.section_boxes["group.user"] = box
         form = QFormLayout(box)
         self._configure_form_layout(form)
         self.user_selector = QComboBox()
@@ -167,27 +185,31 @@ class RecordEditorPage(QWidget):
         self.user_institution = QLineEdit()
         self.user_address = QLineEdit()
         self.user_country = QLineEdit()
-        form.addRow("preset", self.user_selector)
-        form.addRow("name_user", self.user_name)
-        form.addRow("first_name_user", self.user_first_name)
-        form.addRow("email_user", self.user_email)
-        form.addRow("unit_user", self.user_unit)
-        form.addRow("institution_user", self.user_institution)
-        form.addRow("address_user", self.user_address)
-        form.addRow("country_user", self.user_country)
+        for key, widget in [
+            ("field.preset", self.user_selector),
+            ("field.name_user", self.user_name),
+            ("field.first_name_user", self.user_first_name),
+            ("field.email_user", self.user_email),
+            ("field.unit_user", self.user_unit),
+            ("field.institution_user", self.user_institution),
+            ("field.address_user", self.user_address),
+            ("field.country_user", self.user_country),
+        ]:
+            self._add_form_row(form, key, widget)
         self.content_layout.addWidget(box)
         self._register_validation_widget("user.email_user", self.user_email)
 
     def _build_file_section(self):
-        box = QGroupBox("file")
+        box = QGroupBox()
+        self.section_boxes["group.file"] = box
         form = QFormLayout(box)
         self._configure_form_layout(form)
         file_name_row = QHBoxLayout()
         self.file_name = QLineEdit()
-        suggest_button = QPushButton("候補を提案")
-        suggest_button.clicked.connect(self._suggest_file_name)
+        self.suggest_button = QPushButton()
+        self.suggest_button.clicked.connect(self._suggest_file_name)
         file_name_row.addWidget(self.file_name)
-        file_name_row.addWidget(suggest_button)
+        file_name_row.addWidget(self.suggest_button)
         file_name_widget = QWidget()
         file_name_widget.setLayout(file_name_row)
         self.file_number = QSpinBox()
@@ -195,16 +217,20 @@ class RecordEditorPage(QWidget):
         self.file_link = QLineEdit()
         self.file_notes = QPlainTextEdit()
         self.file_doi = QLineEdit()
-        form.addRow("name", file_name_widget)
-        form.addRow("number", self.file_number)
-        form.addRow("link", self.file_link)
-        form.addRow("notes", self.file_notes)
-        form.addRow("doi", self.file_doi)
+        self._add_form_row(form, "field.name", file_name_widget)
+        for key, widget in [
+            ("field.number", self.file_number),
+            ("field.link", self.file_link),
+            ("field.notes", self.file_notes),
+            ("field.doi", self.file_doi),
+        ]:
+            self._add_form_row(form, key, widget)
         self.content_layout.addWidget(box)
         self._register_validation_widget("file.name", self.file_name)
 
     def _build_interaction_section(self):
-        box = QGroupBox("interaction helper")
+        box = QGroupBox()
+        self.section_boxes["group.interaction_helper"] = box
         form = QFormLayout(box)
         self._configure_form_layout(form)
         self.partner_name = QLineEdit()
@@ -213,12 +239,20 @@ class RecordEditorPage(QWidget):
         self.partner_strain = QLineEdit()
         self.partner_genotype = QLineEdit()
         self.partner_note = QLineEdit()
-        form.addRow("partner name", self.partner_name)
-        form.addRow("partner sex", self.partner_sex)
-        form.addRow("partner strain", self.partner_strain)
-        form.addRow("partner genotype", self.partner_genotype)
-        form.addRow("partner note", self.partner_note)
+        for key, widget in [
+            ("field.partner_name", self.partner_name),
+            ("field.partner_sex", self.partner_sex),
+            ("field.partner_strain", self.partner_strain),
+            ("field.partner_genotype", self.partner_genotype),
+            ("field.partner_note", self.partner_note),
+        ]:
+            self._add_form_row(form, key, widget)
         self.content_layout.addWidget(box)
+
+    def _add_form_row(self, form: QFormLayout, label_key: str, widget: QWidget):
+        label = QLabel()
+        self.labels.setdefault(label_key, []).append(label)
+        form.addRow(label, widget)
 
     def set_users(self, users):
         self._users_by_id = {user.id: user for user in users if user.id}
@@ -442,6 +476,17 @@ class RecordEditorPage(QWidget):
     def _configure_form_layout(form: QFormLayout):
         form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
+
+    def apply_language(self, language: str):
+        self.language = language
+        for section_key, box in self.section_boxes.items():
+            box.setTitle(tr(language, section_key))
+        for key, labels in self.labels.items():
+            for label in labels:
+                label.setText(tr(language, key))
+        self.cancel_button.setText(tr(language, "common.cancel"))
+        self.preview_button.setText(tr(language, "common.preview_json"))
+        self.suggest_button.setText(tr(language, "record.suggest_filename"))
 
     def clear_validation_errors(self):
         self.validation_label.clear()

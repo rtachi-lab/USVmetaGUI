@@ -3,6 +3,7 @@ from pathlib import Path
 
 from PySide6.QtWidgets import QMainWindow, QMessageBox, QStackedWidget
 
+from app.i18n import tr
 from app.models import AppSettings
 from app.pages.home_page import HomePage
 from app.pages.json_preview_page import JsonPreviewPage
@@ -29,7 +30,6 @@ from app.validator import RecordValidator
 class MainWindow(QMainWindow):
     def __init__(self, data_dir: Path):
         super().__init__()
-        self.setWindowTitle("USV Meta GUI")
 
         self.data_dir = data_dir
         self.schema_path = data_dir.parent / "schema.yaml"
@@ -40,6 +40,9 @@ class MainWindow(QMainWindow):
 
         if not self.settings.records_dir:
             self.settings.records_dir = str(data_dir / "records")
+            self.settings_repo.save(self.settings)
+        if not getattr(self.settings, "language", None):
+            self.settings.language = "en"
             self.settings_repo.save(self.settings)
 
         records_dir = Path(self.settings.records_dir)
@@ -77,6 +80,7 @@ class MainWindow(QMainWindow):
         ]:
             self.stack.addWidget(page)
 
+        self.apply_language(self.settings.language)
         self._connect_signals()
         self.show_home()
 
@@ -161,7 +165,7 @@ class MainWindow(QMainWindow):
         if errors:
             self.record_editor_page.show_validation_errors(errors)
             self.stack.setCurrentWidget(self.record_editor_page)
-            QMessageBox.warning(self, "Validation Error", "\n".join(errors))
+            QMessageBox.warning(self, tr(self.settings.language, "msg.validation_error"), "\n".join(errors))
             return
 
         filename = make_filename(self.current_payload, self.settings.json_filename_pattern)
@@ -228,7 +232,11 @@ class MainWindow(QMainWindow):
     def edit_template(self, template_id: str):
         template = self.template_repo.get(template_id)
         if template is None:
-            QMessageBox.warning(self, "Template Error", "Template not found.")
+            QMessageBox.warning(
+                self,
+                tr(self.settings.language, "msg.template_error"),
+                tr(self.settings.language, "msg.template_not_found"),
+            )
             return
         self.template_editor_page.clear_form()
         self.template_editor_page.set_users(self.user_repo.list_all())
@@ -237,7 +245,11 @@ class MainWindow(QMainWindow):
 
     def save_template(self, template):
         if not template.template_name:
-            QMessageBox.warning(self, "Validation Error", "template_name is required")
+            QMessageBox.warning(
+                self,
+                tr(self.settings.language, "msg.validation_error"),
+                tr(self.settings.language, "msg.template_name_required"),
+            )
             return
         if not template.id:
             template.id = self.template_repo.new_id()
@@ -247,7 +259,11 @@ class MainWindow(QMainWindow):
     def duplicate_template(self, template_id: str):
         template = self.template_repo.get(template_id)
         if template is None:
-            QMessageBox.warning(self, "Template Error", "Template not found.")
+            QMessageBox.warning(
+                self,
+                tr(self.settings.language, "msg.template_error"),
+                tr(self.settings.language, "msg.template_not_found"),
+            )
             return
 
         duplicated = copy.deepcopy(template)
@@ -260,10 +276,18 @@ class MainWindow(QMainWindow):
     def delete_template(self, template_id: str):
         template = self.template_repo.get(template_id)
         if template is None:
-            QMessageBox.warning(self, "Template Error", "Template not found.")
+            QMessageBox.warning(
+                self,
+                tr(self.settings.language, "msg.template_error"),
+                tr(self.settings.language, "msg.template_not_found"),
+            )
             return
 
-        reply = QMessageBox.question(self, "Delete Template", f"Delete template '{template.template_name}'?")
+        reply = QMessageBox.question(
+            self,
+            tr(self.settings.language, "msg.delete_template"),
+            tr(self.settings.language, "msg.delete_template_confirm", name=template.template_name),
+        )
         if reply == QMessageBox.StandardButton.Yes:
             self.template_repo.delete(template_id)
             self.show_template_list()
@@ -279,7 +303,11 @@ class MainWindow(QMainWindow):
     def edit_user(self, user_id: str):
         user = self.user_repo.get(user_id)
         if user is None:
-            QMessageBox.warning(self, "User Error", "User not found.")
+            QMessageBox.warning(
+                self,
+                tr(self.settings.language, "msg.user_error"),
+                tr(self.settings.language, "msg.user_not_found"),
+            )
             return
         self.user_editor_page.clear_form()
         self.user_editor_page.load_user(user)
@@ -287,7 +315,11 @@ class MainWindow(QMainWindow):
 
     def save_user(self, user):
         if not user.email_user:
-            QMessageBox.warning(self, "Validation Error", "email_user is required")
+            QMessageBox.warning(
+                self,
+                tr(self.settings.language, "msg.validation_error"),
+                tr(self.settings.language, "msg.user_email_required"),
+            )
             return
         if not user.id:
             user.id = self.user_repo.new_id()
@@ -297,11 +329,19 @@ class MainWindow(QMainWindow):
     def delete_user(self, user_id: str):
         user = self.user_repo.get(user_id)
         if user is None:
-            QMessageBox.warning(self, "User Error", "User not found.")
+            QMessageBox.warning(
+                self,
+                tr(self.settings.language, "msg.user_error"),
+                tr(self.settings.language, "msg.user_not_found"),
+            )
             return
 
         label = f"{user.name_user or ''} {user.first_name_user or ''} <{user.email_user}>".strip()
-        reply = QMessageBox.question(self, "Delete User", f"Delete user '{label}'?")
+        reply = QMessageBox.question(
+            self,
+            tr(self.settings.language, "msg.delete_user"),
+            tr(self.settings.language, "msg.delete_user_confirm", name=label),
+        )
         if reply == QMessageBox.StandardButton.Yes:
             self.user_repo.delete(user_id)
             self.show_user_list()
@@ -313,12 +353,31 @@ class MainWindow(QMainWindow):
     def save_settings(self, settings: AppSettings):
         self.settings = settings
         self.settings_repo.save(settings)
+        self.apply_language(settings.language)
 
         records_dir = Path(settings.records_dir)
         records_dir.mkdir(parents=True, exist_ok=True)
         self.record_repo = RecordRepository(records_dir)
 
         self.show_home()
+
+    def apply_language(self, language: str):
+        self.settings.language = language
+        self.setWindowTitle(tr(language, "app.title"))
+        for page in [
+            self.home_page,
+            self.template_select_page,
+            self.record_editor_page,
+            self.preview_page,
+            self.save_result_page,
+            self.template_list_page,
+            self.template_editor_page,
+            self.user_list_page,
+            self.user_editor_page,
+            self.settings_page,
+        ]:
+            if hasattr(page, "apply_language"):
+                page.apply_language(language)
 
     def _validate_record_and_payload(self, record, payload: dict) -> list[str]:
         errors = RecordValidator.validate(record)

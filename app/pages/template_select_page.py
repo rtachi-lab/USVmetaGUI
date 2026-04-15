@@ -1,12 +1,7 @@
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import (
-    QHBoxLayout,
-    QListWidget,
-    QListWidgetItem,
-    QPushButton,
-    QVBoxLayout,
-    QWidget,
-)
+from PySide6.QtWidgets import QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QVBoxLayout, QWidget
+
+from app.i18n import tr
 
 
 class TemplateSelectPage(QWidget):
@@ -21,20 +16,27 @@ class TemplateSelectPage(QWidget):
         self.list_widget = QListWidget()
 
         button_row = QHBoxLayout()
-        back_button = QPushButton("戻る")
-        empty_button = QPushButton("空で開始")
-        open_button = QPushButton("選択して開始")
+        self.back_button = QPushButton()
+        self.empty_button = QPushButton()
+        self.open_button = QPushButton()
 
-        back_button.clicked.connect(self.back_requested.emit)
-        empty_button.clicked.connect(self.empty_record_requested.emit)
-        open_button.clicked.connect(self._emit_selected)
+        self.back_button.clicked.connect(self.back_requested.emit)
+        self.empty_button.clicked.connect(self.empty_record_requested.emit)
+        self.open_button.clicked.connect(self._emit_selected)
 
-        button_row.addWidget(back_button)
-        button_row.addWidget(empty_button)
-        button_row.addWidget(open_button)
+        button_row.addWidget(self.back_button)
+        button_row.addWidget(self.empty_button)
+        button_row.addWidget(self.open_button)
 
         layout.addWidget(self.list_widget)
         layout.addLayout(button_row)
+
+        self.apply_language("en")
+
+    def apply_language(self, language: str):
+        self.back_button.setText(tr(language, "common.back"))
+        self.empty_button.setText(tr(language, "template.select.empty"))
+        self.open_button.setText(tr(language, "template.select.open"))
 
     def set_templates(self, templates):
         self.list_widget.clear()

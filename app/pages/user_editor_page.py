@@ -1,13 +1,7 @@
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import (
-    QFormLayout,
-    QHBoxLayout,
-    QLineEdit,
-    QPushButton,
-    QVBoxLayout,
-    QWidget,
-)
+from PySide6.QtWidgets import QFormLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
 
+from app.i18n import tr
 from app.models import UserModel
 
 
@@ -15,9 +9,20 @@ class UserEditorPage(QWidget):
     save_requested = Signal(object)
     cancel_requested = Signal()
 
+    FIELD_KEYS = [
+        ("name_user", "field.name_user"),
+        ("first_name_user", "field.first_name_user"),
+        ("email_user", "field.email_user"),
+        ("unit_user", "field.unit_user"),
+        ("institution_user", "field.institution_user"),
+        ("address_user", "field.address_user"),
+        ("country_user", "field.country_user"),
+    ]
+
     def __init__(self):
         super().__init__()
         self.user_id = None
+        self.labels = {}
 
         layout = QVBoxLayout(self)
         form = QFormLayout()
@@ -32,27 +37,32 @@ class UserEditorPage(QWidget):
         self.address_user = QLineEdit()
         self.country_user = QLineEdit()
 
-        form.addRow("name_user", self.name_user)
-        form.addRow("first_name_user", self.first_name_user)
-        form.addRow("email_user", self.email_user)
-        form.addRow("unit_user", self.unit_user)
-        form.addRow("institution_user", self.institution_user)
-        form.addRow("address_user", self.address_user)
-        form.addRow("country_user", self.country_user)
+        for attr_name, key in self.FIELD_KEYS:
+            label = QLabel()
+            self.labels[key] = label
+            form.addRow(label, getattr(self, attr_name))
 
         row = QHBoxLayout()
-        cancel_button = QPushButton("キャンセル")
-        save_button = QPushButton("保存")
+        self.cancel_button = QPushButton()
+        self.save_button = QPushButton()
 
-        cancel_button.clicked.connect(self.cancel_requested.emit)
-        save_button.clicked.connect(self._emit_save)
+        self.cancel_button.clicked.connect(self.cancel_requested.emit)
+        self.save_button.clicked.connect(self._emit_save)
 
-        row.addWidget(cancel_button)
-        row.addWidget(save_button)
+        row.addWidget(self.cancel_button)
+        row.addWidget(self.save_button)
 
         layout.addLayout(form)
         layout.addLayout(row)
         layout.addStretch()
+
+        self.apply_language("en")
+
+    def apply_language(self, language: str):
+        for key, label in self.labels.items():
+            label.setText(tr(language, key))
+        self.cancel_button.setText(tr(language, "common.cancel"))
+        self.save_button.setText(tr(language, "common.save"))
 
     def clear_form(self):
         self.user_id = None
