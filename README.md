@@ -11,6 +11,13 @@ PySide6 desktop application for creating mouseTube-compatible USV metadata JSON 
 - Validate required fields and schema constraints before export
 - Save metadata locally in a mouseTube-compatible structure
 
+## Project Notes
+
+For restart context and design rationale, see:
+
+- [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)
+- [RESUME_NEXT_STEPS.md](RESUME_NEXT_STEPS.md)
+
 ## Project Structure
 
 ```text
